@@ -107,7 +107,8 @@ export default function App() {
 
 
   }, [])
-   useEffect( () => {
+
+  useEffect(() => {
 
     axios.get(`${urlAPI}/getRestaurants`).then((response) => {
       setValueState(response.data[0].stateValue)
@@ -119,10 +120,6 @@ export default function App() {
   }, [menu])
 
 
-
-  {
-    console.log(atualDay)
-  }
 
   async function getProductOne() {
     await axios.get(`${urlAPI}/getpizzasone`).then((response) => {
@@ -297,39 +294,60 @@ export default function App() {
 
   function handlerCalculateValue(item) {
     if (item.pizza && item.pizzatwo) {
-      var firstPizza = item;
-      var addAdicional = firstPizza.adicional ? firstPizza.adicional.value : 0;
-      var addPizza = firstPizza.pizza.value > firstPizza.pizzatwo.value ? firstPizza.pizza.value : firstPizza.pizzatwo.value;
-      // firstPizza.pizza ? firstPizza.pizza.value : 0;
-      var bordas = firstPizza.bordas ? firstPizza.bordas.value : 0;
-      var initialValue = addAdicional + addPizza + bordas;
-      var totalValue = cartItems.reduce(function (acc, pizza, index) {
-        var adicionalValue = pizza.adicional ? pizza.adicional.value : 0;
-        var bordasValue = pizza.bordas ? pizza.bordas.value : 0;
-        var pizzaValue = pizza.pizza ? pizza.pizza.value : 0;
-        var itemProduct = pizza.produc ? pizza.product.value : 0;
-        return acc + adicionalValue + bordasValue + pizzaValue + itemProduct;
-      }, initialValue);
+      if (item.category === 'cadpizzaOne' || item.category === 'cadpizzatwo' || item.category === 'cadpizzapremium' && atualDay === 0 || valueState === true) {
+        var firstPizza = item;
+        var addAdicional = firstPizza.adicional ? firstPizza.adicional.value : 0;
+        var addPizza = firstPizza.pizza.value2 > firstPizza.pizzatwo.value2 ? firstPizza.pizza.value2 : firstPizza.pizzatwo.value2;
+        // firstPizza.pizza ? firstPizza.pizza.value : 0;
+        var bordas = firstPizza.bordas ? firstPizza.bordas.value : 0;
+        var initialValue = addAdicional + addPizza + bordas;
+        var totalValue = cartItems.reduce(function (acc, pizza, index) {
+          var adicionalValue = pizza.adicional ? pizza.adicional.value : 0;
+          var bordasValue = pizza.bordas ? pizza.bordas.value : 0;
+          var pizzaValue = pizza.pizza ? pizza.pizza.value2 : 0;
+          var itemProduct = pizza.produc ? pizza.product.value2 : 0;
+          return acc + adicionalValue + bordasValue + pizzaValue + itemProduct;
+        }, initialValue);
 
-      setTotalValue(totalValue)
+        setTotalValue(totalValue)
+
+      }
+
     } else {
 
+      if (item.category === 'cadpizzaOne' || item.category === 'cadpizzatwo' || item.category === 'cadpizzapremium' && atualDay === 0 || valueState === true) {
+        var firstPizza = item;
+        var addAdicional = firstPizza.adicional ? firstPizza.adicional.value : 0;
+        var addPizza = firstPizza.pizza ? firstPizza.pizza.value2 : 0;
+        var bordas = firstPizza.bordas ? firstPizza.bordas.value2 : 0;
+        var initialValue = item.produc ? item.produc.value : addAdicional + addPizza + bordas;
+        var totalValue = cartItems.reduce(function (acc, pizza, index) {
+          var adicionalValue = pizza.adicional ? pizza.adicional.value : 0;
+          var bordasValue = pizza.bordas ? pizza.bordas.value : 0;
+          var pizzaValue = pizza.pizza ? pizza.pizza.value2 : 0;
+          var itemProduct = pizza.produc ? pizza.produc.value2 : 0;
+          return acc + adicionalValue + bordasValue + pizzaValue + itemProduct;
+        }, initialValue);
 
-      var firstPizza = item;
-      var addAdicional = firstPizza.adicional ? firstPizza.adicional.value : 0;
-      var addPizza = firstPizza.pizza ? firstPizza.pizza.value : 0;
-      var bordas = firstPizza.bordas ? firstPizza.bordas.value : 0;
-      var initialValue = item.produc ? item.produc.value : addAdicional + addPizza + bordas;
-      var totalValue = cartItems.reduce(function (acc, pizza, index) {
-        var adicionalValue = pizza.adicional ? pizza.adicional.value : 0;
-        var bordasValue = pizza.bordas ? pizza.bordas.value : 0;
-        var pizzaValue = pizza.pizza ? pizza.pizza.value : 0;
-        var itemProduct = pizza.produc ? pizza.produc.value : 0;
-        return acc + adicionalValue + bordasValue + pizzaValue + itemProduct;
-      }, initialValue);
+        setTotalValue(totalValue)
+      } else {
+        var firstPizza = item;
+        var addAdicional = firstPizza.adicional ? firstPizza.adicional.value : 0;
+        var addPizza = firstPizza.pizza ? firstPizza.pizza.value : 0;
+        var bordas = firstPizza.bordas ? firstPizza.bordas.value : 0;
+        var initialValue = item.produc ? item.produc.value : addAdicional + addPizza + bordas;
+        var totalValue = cartItems.reduce(function (acc, pizza, index) {
+          var adicionalValue = pizza.adicional ? pizza.adicional.value : 0;
+          var bordasValue = pizza.bordas ? pizza.bordas.value : 0;
+          var pizzaValue = pizza.pizza ? pizza.pizza.value : 0;
+          var itemProduct = pizza.produc ? pizza.produc.value : 0;
+          return acc + adicionalValue + bordasValue + pizzaValue + itemProduct;
+        }, initialValue);
 
-      setTotalValue(totalValue)
+        setTotalValue(totalValue)
+      }
     }
+
 
   }
 
@@ -855,7 +873,7 @@ export default function App() {
 
           {
             !PaymentPix ?
-              cartItems.length == [] ? <View style={styles.noItem}>
+              cartItems.length < 1 ? <View style={styles.noItem}>
                 <Text style={styles.noItemCart}>Você ainda não adicionou nenhum item ao carrinho!</Text>
               </View> : <FlatList
                 data={cartItems}
@@ -870,7 +888,12 @@ export default function App() {
 
 
                       <View style={styles.itemCart}>
-                        <Text style={styles.itemCartName} >{item.item.produc.name} </Text>
+                        <View>
+                          <Text style={styles.itemCartName} >{item.item.produc.name} </Text>
+                          {item.item.produc.description ? <Text>{item.item.produc.description}</Text> : null}
+
+
+                        </View>
                         <View style={styles.cartValueDecrement}>
                           <Text>R${item.item.produc.value}</Text>
                           <View style={styles.decrement}><Text style={styles.decrementText}>-</Text></View>
@@ -896,7 +919,7 @@ export default function App() {
 
 
                       <View style={styles.itemCart}>
-                        <Text style={styles.itemCartName} >{item.item.pizza && item.item.pizzatwo ? `1/2 ${item.item.pizza.name} 1/2${item.item.pizzatwo.name}` : item.item.pizza.name} </Text>
+                        <Text style={styles.itemCartName} >{item.item.pizza && item.item.pizzatwo ? `1/2 ${item.item.pizza.name} \n1 /2${item.item.pizzatwo.name}` : item.item.pizza.name} </Text>
                         <View style={styles.cartValueDecrement}>
                           <Text>R${item.item.pizza && item.item.pizzatwo ? item.item.pizza.value > item.item.pizzatwo.value ? item.item.pizza.value : item.item.pizzatwo.value : item.item.pizza.value.toFixed(2)}</Text>
                           <View style={styles.decrement}><Text style={styles.decrementText}>-</Text></View>
@@ -917,7 +940,7 @@ export default function App() {
 
                         </View>
                       </View>
-                      <View style={styles.itemDescription}><Text style={styles.itemDescriptionText}>{item.item.pizza && item.item.pizzatwo ? `1/2- ${item.item.pizza.name}${item.item.pizza.description}  1/2- ${item.item.pizzatwo.name}${item.item.pizzatwo.description}` : item.item.pizza.description}</Text></View>
+                      <View style={styles.itemDescription}><Text style={styles.itemDescriptionText}>{item.item.pizza && item.item.pizzatwo ? `1/2- ${item.item.pizza.name}${item.item.pizza.description}\n 1/2- ${item.item.pizzatwo.name}${item.item.pizzatwo.description}` : item.item.pizza.description}</Text></View>
                       <View >
                         {item.item.bordas || item.item.adicional ? <Text style={styles.itemAditionals}>Adicionais:</Text> : null}
                         {
@@ -976,8 +999,8 @@ export default function App() {
 
           <View style={styles.cartInfors}>
             <Text>Subtotal: R${totalValue.toFixed(2)}</Text>
-            <TouchableOpacity onPress={() => handlerClearCart()}>
-              <Text>Limpar</Text>
+            <TouchableOpacity onPress={() => handlerClearCart()}  style={styles.buttonRemove}>
+              <Text style={styles.removeText} >Limpar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -1324,6 +1347,8 @@ const styles = StyleSheet.create({
   buttonRemove: {
     padding: 6,
     backgroundColor: '#910c0c',
+    borderRadius: 6,
+    elevation: 6
 
   },
   removeText: {
