@@ -860,7 +860,7 @@ export default function App() {
                 <Text style={styles.buttonPaymentText}>C.Crédito</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity >
+            <TouchableOpacity onPress={() => PayTEF(totalValue, 2)} >
               <View style={styles.buttonPayment}>
                 <Text style={styles.buttonPaymentText}>C.Debito</Text>
               </View>
@@ -1011,9 +1011,7 @@ export default function App() {
             <TouchableOpacity onPress={() => handlerClearCart()} style={styles.buttonRemove}>
               <Text style={styles.removeText} >Limpar</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => PayTEF()} style={styles.buttonRemove}>
-              <Text style={styles.removeText} >TEF</Text>
-            </TouchableOpacity>
+
           </View>
         </View>
       </View>

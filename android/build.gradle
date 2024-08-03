@@ -80,6 +80,11 @@ repositories {
 dependencies {
   implementation 'com.google.code.gson:gson:2.8.6'
   implementation files('libs/GS300_APlibrary.jar')
+  implementation files('libs/core-v01.01.00-HOMOLOG-release.aar')
+  implementation files('libs/DestaxaSDK-release-v1.4.2.142000.aar')
+  implementation files('libs/e1-V02.20.00-release.aar')
+  implementation files('libs/pagamentos-v01.06.00-release.aar')
+  implementation files('libs/ppcomp_release-1.29.14.210610.aar')
   // For < 0.71, this will be from the local maven repo
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
   //noinspection GradleDynamicVersion

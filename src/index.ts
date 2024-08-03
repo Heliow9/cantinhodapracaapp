@@ -116,6 +116,15 @@ export function linePDV(
   return Gs300.linePDV(line)
 }
 
+export function PayTEF(
+  value: number,
+  paymentMethod: Number,
+
+): void {
+  console.log(value)
+  return Gs300.onTef(value, paymentMethod)
+}
+
 
 
 export function printImageBase64(
