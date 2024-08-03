@@ -9,8 +9,8 @@ import {
   Print2023,
   cutPDV,
   linePDV,
-  ImprimiPDV
-
+  ImprimiPDV,
+  PayTEF
 } from 'react-native-gs300-print';
 import axios from 'axios';
 import drink from '../assets/drink.png'
@@ -19,14 +19,13 @@ import pizza2 from '../assets/twoflavor.png'
 import cantinhobg from '../assets/cantinhobk2.jpg'
 import sushi from '../assets/coxinha.png'
 import snacks from '../assets/snacks.png'
+import sobremesa from '../assets/sobremesa.png'
 import logocantinho from '../assets/logocantinho.png'
 import embalagem from '../assets/embalagem.png'
 import Icon from 'react-native-ionicons'
 
 
 export default function App() {
-
-
 
 
   const [pizzas, setPizzas] = useState([])
@@ -310,6 +309,7 @@ export default function App() {
         }, initialValue);
 
         setTotalValue(totalValue)
+        console.log('teste')
 
       }
 
@@ -328,7 +328,7 @@ export default function App() {
           var itemProduct = pizza.produc ? pizza.produc.value2 : 0;
           return acc + adicionalValue + bordasValue + pizzaValue + itemProduct;
         }, initialValue);
-
+        console.log(totalValue + '2')
         setTotalValue(totalValue)
       } else {
         var firstPizza = item;
@@ -343,7 +343,7 @@ export default function App() {
           var itemProduct = pizza.produc ? pizza.produc.value : 0;
           return acc + adicionalValue + bordasValue + pizzaValue + itemProduct;
         }, initialValue);
-
+        console.log(totalValue + '1')
         setTotalValue(totalValue)
       }
     }
@@ -606,6 +606,12 @@ export default function App() {
                 <View style={styles.buttomView} >
                   <Image source={sushi} style={styles.buttomImage} />
                   <Text style={styles.textItemButtom}>Salgados</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setMenu(salgados)}>
+                <View style={styles.buttomView} >
+                  <Image source={sobremesa} style={styles.buttomImage} />
+                  <Text style={styles.textItemButtom}>Sobremesas</Text>
                 </View>
               </TouchableOpacity>
 
@@ -895,8 +901,11 @@ export default function App() {
 
                         </View>
                         <View style={styles.cartValueDecrement}>
-                          <Text>R${item.item.produc.value}</Text>
-                          <View style={styles.decrement}><Text style={styles.decrementText}>-</Text></View>
+                          {
+                            atualDay == 0 || valueState && item.item.produc.value ? <Text>R${item.item.produc.value2}</Text> : <Text>R${item.item.produc.value}</Text>
+                          }
+
+
                         </View>
                         <View>
 
@@ -999,8 +1008,11 @@ export default function App() {
 
           <View style={styles.cartInfors}>
             <Text>Subtotal: R${totalValue.toFixed(2)}</Text>
-            <TouchableOpacity onPress={() => handlerClearCart()}  style={styles.buttonRemove}>
+            <TouchableOpacity onPress={() => handlerClearCart()} style={styles.buttonRemove}>
               <Text style={styles.removeText} >Limpar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => PayTEF()} style={styles.buttonRemove}>
+              <Text style={styles.removeText} >TEF</Text>
             </TouchableOpacity>
           </View>
         </View>
