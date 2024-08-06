@@ -117,12 +117,18 @@ export function linePDV(
 }
 
 export function PayTEF(
-  value: number,
-  paymentMethod: Number,
+  value: String,
+  paymentMethod: String,
 
 ): void {
   console.log(value)
   return Gs300.onTef(value, paymentMethod)
+}
+
+
+export function pixTEF(){
+
+  Gs300.onTefPix()
 }
 
 

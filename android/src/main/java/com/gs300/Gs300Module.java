@@ -187,7 +187,7 @@ public class Gs300Module extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void onTef(int value, int paymentMethod) {
+  public void onTef(String value, String paymentMethod) {
     Activity thisActivity = getCurrentActivity();
     Intent i = new Intent("com.elgin.e1.digitalhub.TEF");
     i.putExtra("empresaSitef", "00000001");
@@ -197,4 +197,3 @@ public class Gs300Module extends ReactContextBaseJavaModule {
     thisActivity.startActivityForResult(i, 1234);
   }
 
-}

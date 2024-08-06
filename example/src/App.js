@@ -10,7 +10,8 @@ import {
   cutPDV,
   linePDV,
   ImprimiPDV,
-  PayTEF
+  PayTEF,
+  pixTEF
 } from 'react-native-gs300-print';
 import axios from 'axios';
 import drink from '../assets/drink.png'
@@ -855,17 +856,17 @@ export default function App() {
           </View>
           <View style={styles.payments}>
             <Text>Pagamentos</Text>
-            <TouchableOpacity>
+            <TouchableOpacity  onPress={() => PayTEF(totalValue.toFixed(2).toString(), "3")}>
               <View style={styles.buttonPayment}>
-                <Text style={styles.buttonPaymentText}>C.Crédito</Text>
+                <Text style={styles.buttonPaymentText}>C .Crédito</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => PayTEF(totalValue, 2)} >
+            <TouchableOpacity onPress={() => PayTEF(totalValue.toFixed(2).toString(), "2")} >
               <View style={styles.buttonPayment}>
-                <Text style={styles.buttonPaymentText}>C.Debito</Text>
+                <Text style={styles.buttonPaymentText}>C .Debito</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => SmartPrinterTest()} >
+            <TouchableOpacity   onPress={() => pixTEF(totalValue.toFixed(2).toString(), "2")} >
               <View style={styles.buttonPayment}>
                 <Text style={styles.buttonPaymentText}>Pix - Online</Text>
               </View>
