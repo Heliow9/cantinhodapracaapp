@@ -141,7 +141,7 @@ public class Gs300Module extends ReactContextBaseJavaModule {
   @ReactMethod
   public void ImprimiPDV(String texto, int fontSize, int FontFamily, int align) {
     printHelper.printStart();
-    printHelper.printData(texto, fontSize, FontFamily, false, align, 70, 0);
+    printHelper.printData(texto, fontSize, FontFamily, false, align, 80, 0);
 
   }
 
@@ -197,3 +197,29 @@ public class Gs300Module extends ReactContextBaseJavaModule {
     thisActivity.startActivityForResult(i, 1234);
   }
 
+  @ReactMethod
+  public void onTefCredit(String value) {
+    Activity thisActivity = getCurrentActivity();
+    Intent i = new Intent("com.elgin.e1.digitalhub.TEF");
+    i.putExtra("empresaSitef", "00000001");
+    i.putExtra("funcao", "credito");
+    i.putExtra("numParcelas", "1");
+    i.putExtra("financiamento", "3");
+    i.putExtra("valor", value);
+    i.putExtra("CNPJ_CPF", "12345678912345");
+    thisActivity.startActivityForResult(i, 1234);
+  }
+
+  @ReactMethod
+  public void onTefPix(String value) {
+
+    Activity thisActivity = getCurrentActivity();
+    Intent i = new Intent("com.elgin.e1.digitalhub.TEF");
+    i.putExtra("modalidade", "pix");
+    i.putExtra("valor", value);
+    i.putExtra("CNPJ_CPF", "12345678912345");
+    // 4) Método Receiver para iniciar a Activity e receber o retorno da transação
+    thisActivity.startActivityForResult(i, 1234);
+  }
+
+}

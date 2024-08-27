@@ -126,10 +126,30 @@ export function PayTEF(
 }
 
 
-export function pixTEF(){
 
-  Gs300.onTefPix()
+export function PayTEFCredit(
+  value: String,
+
+): void {
+  console.log(value)
+  return Gs300.onTefCredit(value)
 }
+
+
+export function pixTEF(
+  value: String,
+
+): void {
+
+  return Gs300.onTefPix(value)
+}
+
+export function cupomTest(
+
+): void {
+  return Gs300.printCupom()
+}
+
 
 
 

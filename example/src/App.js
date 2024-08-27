@@ -11,7 +11,9 @@ import {
   linePDV,
   ImprimiPDV,
   PayTEF,
-  pixTEF
+  pixTEF,
+  PayTEFCredit,
+  cupomTest
 } from 'react-native-gs300-print';
 import axios from 'axios';
 import drink from '../assets/drink.png'
@@ -477,19 +479,50 @@ export default function App() {
 
   }
 
-  function abreviarPrimeiroNome(str) {
-    // Dividir a string em partes separadas pelos espaços
-    let partes = str.split(" ");
 
-    // Abreviar o primeiro caractere do primeiro nome
-    let primeiroNomeAbreviado = partes[0].charAt(0);
 
-    // Concatenar o primeiro nome abreviado com o sobrenome
-    let sobrenome = partes.slice(1).join(" "); // Pegar o restante da string após o primeiro espaço
-    let nomeAbreviado = primeiroNomeAbreviado + " " + sobrenome;
 
-    return nomeAbreviado;
+  function formatProductLine(itemName, quantity, unitPrice, totalPrice) {
+    const maxItemLength = 18; // Limite de caracteres para o nome do produto
+    const lineLength = 54; // Total de caracteres por linha
+    const quantityFieldLength = 6; // Espaço reservado para quantidade
+    const unitPriceFieldLength = 9; // Espaço reservado para valor unitário
+    const totalPriceFieldLength = 9; // Espaço reservado para valor total
+
+    let formattedLines = [];
+
+    // Quebra o nome do item em várias linhas, se necessário
+    while (itemName.length > maxItemLength) {
+      let line = itemName.slice(0, maxItemLength);
+      formattedLines.push(line); // Adiciona a linha quebrada
+      itemName = itemName.slice(maxItemLength);
+    }
+
+    // Adiciona a última linha com nome e valores alinhados
+    let line = itemName.padEnd(maxItemLength, ' '); // Nome do item alinhado à esquerda
+    line += quantity.toString().padStart(quantityFieldLength, ' '); // Quantidade
+    line += unitPrice.toFixed(2).padStart(unitPriceFieldLength, ' '); // Valor unitário
+    line += totalPrice.toFixed(2).padStart(totalPriceFieldLength, ' '); // Valor total
+
+    formattedLines.push(line); // Adiciona a linha formatada com os valores
+
+    return formattedLines;
   }
+
+
+  function printProductLine(itemName, quantity, unitPrice, totalPrice) {
+    const lines = formatProductLine(itemName, quantity, unitPrice, totalPrice);
+
+    lines.forEach((line, index) => {
+      // Alinhamento à esquerda para a primeira linha, e centralizado para a linha que inclui valores
+      if (index === lines.length - 1) {
+        ImprimiPDV(line, 30, 0, 2); // Última linha com os valores
+      } else {
+        ImprimiPDV(line, 30, 0, 0); // Linhas de quebra de nome
+      }
+    });
+  }
+
 
   function SmartPrinterTest(paymentMetod) {
     incrementarComanda();
@@ -505,23 +538,24 @@ export default function App() {
     ImprimiPDV(`Pedido:${numeroComanda}`, 40, 1, 1)
     ImprimiPDV(`${today.toLocaleDateString()}                              ${new Date().toLocaleTimeString('pt-br', options)}`, 20, 0, 1)
 
-    ImprimiPDV(`============ Produtos ============`, 27, 0, 1)
-    ImprimiPDV(`Nome                             Qnt.  vUnit       Subtotal`, 27, 0, 1)
-    ImprimiPDV(`------------------------------------------------------------------------------------`, 27, 0, 1)
-
+    ImprimiPDV(`------------ Produtos ------------`, 27, 0, 1)
+    ImprimiPDV("Produto          Quant. V. Un. Valor", 30, 0, 1);
+    ImprimiPDV(`----------------------------------------------------------------------------------`, 27, 0, 1)
 
     cartItems.map((item, index) => (
-      item.pizza && ImprimiPDV(`Pizza: ${item.pizza.name.length >= 19 ? abreviarPrimeiroNome(item.pizza.name) : item.pizza.name}                   1x`, 12, 1, 0),
-      item.pizza && ImprimiPDV(`R$${item.pizza.value}       R$${item.pizza.value}`, 12, 1, 2),
-      item.adicional || item.bordas ?
-        ImprimiPDV('Adicionais:', 25, 0, 0) : null,
-      item.adicional ? ImprimiPDV(`Adicional: ${item.adicional.Aditionalname}`, 12, 0, 0) : null,
-      item.adicional ? ImprimiPDV(`R$${item.adicional.value}`, 12, 1, 2) : null,
-      item.bordas ? ImprimiPDV(`Borda: ${abreviarPrimeiroNome(item.bordas.bordasName)}.`, 12, 0, 0) : null,
-      item.bordas ? ImprimiPDV(`R$${item.bordas.value}`, 12, 1, 2) : null,
-      item.travelTax ? ImprimiPDV(`${item.travelTax.item.name}: R$${item.travelTax.item.value}`, 12, 0, 2) : null,
-      ImprimiPDV('____________________________________________________________', 20, 1, 0),
-      item.produc ? ImprimiPDV(`${item.produc.name}${item.produc.name > 36 ? '                           ' : '                                    '}1x        R$${item.produc.value}      R$${item.produc.value}`, 12, 1, 0) : null
+      printProductLine(item.pizza.name, 1, item.pizza.value, item.pizza.value)
+
+      // item.pizza && ImprimiPDV(`Pizza: ${item.pizza.name.length >= 19 ? abreviarPrimeiroNome(item.pizza.name) : item.pizza.name}                   1x`, 28, 1, 0),
+      // item.pizza && ImprimiPDV(`R$${item.pizza.value}       R$${item.pizza.value}`, 28, 1, 2),
+      // item.adicional || item.bordas ?
+      //   ImprimiPDV('Adicionais:', 25, 0, 0) : null,
+      // item.adicional ? ImprimiPDV(`Adicional: ${item.adicional.Aditionalname}`, 28, 0, 0) : null,
+      // item.adicional ? ImprimiPDV(`R$${item.adicional.value}`, 12, 1, 2) : null,
+      // item.bordas ? ImprimiPDV(`Borda: ${abreviarPrimeiroNome(item.bordas.bordasName)}.`, 28, 0, 0) : null,
+      // item.bordas ? ImprimiPDV(`R$${item.bordas.value}`, 28, 1, 2) : null,
+      // item.travelTax ? ImprimiPDV(`${item.travelTax.item.name}: R$${item.travelTax.item.value}`, 28, 0, 2) : null,
+      // ImprimiPDV('____________________________________________________________', 20, 1, 0),
+      // item.produc ? ImprimiPDV(`${item.produc.name}${item.produc.name > 36 ? '                           ' : '                                    '}1x        R$${item.produc.value}      R$${item.produc.value}`, 28, 1, 0) : null
     ))
     linePDV(4)
 
@@ -856,7 +890,7 @@ export default function App() {
           </View>
           <View style={styles.payments}>
             <Text>Pagamentos</Text>
-            <TouchableOpacity  onPress={() => PayTEF(totalValue.toFixed(2).toString(), "3")}>
+            <TouchableOpacity onPress={() => PayTEFCredit(totalValue.toFixed(2).toString())}>
               <View style={styles.buttonPayment}>
                 <Text style={styles.buttonPaymentText}>C .Crédito</Text>
               </View>
@@ -866,7 +900,7 @@ export default function App() {
                 <Text style={styles.buttonPaymentText}>C .Debito</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity   onPress={() => pixTEF(totalValue.toFixed(2).toString(), "2")} >
+            <TouchableOpacity onPress={() => SmartPrinterTest()} >
               <View style={styles.buttonPayment}>
                 <Text style={styles.buttonPaymentText}>Pix - Online</Text>
               </View>
