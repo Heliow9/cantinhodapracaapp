@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ActivityIndicator, Modal, Pressable, ImageBackground, NativeModules, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ActivityIndicator, Modal, Pressable, ImageBackground, NativeModules, SafeAreaView, Animated, Easing } from 'react-native';
 import {
   onPrint,
   printImageBase64,
@@ -52,6 +52,46 @@ export default function App() {
   const [secondflavor, setSecondFlavor] = useState()
   const [drinks, setDrinks] = useState([])
 
+
+  // Crie uma referência animada para manipular a rotação
+  const rotateValue = useRef(new Animated.Value(0)).current;
+  const scaleValue = useRef(new Animated.Value(1)).current;
+
+  const startAnimation = () => {
+    // Animação de rotação
+    Animated.loop(
+      Animated.timing(rotateValue, {
+        toValue: 1,
+        duration: 4000, // 4 segundos para rotação mais suave
+        easing: Easing.linear,
+        useNativeDriver: true
+      })
+    ).start();
+
+    // Animação de pulso (escala)
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(scaleValue, {
+          toValue: 1.2, // aumenta o tamanho em 20%
+          duration: 1000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true
+        }),
+        Animated.timing(scaleValue, {
+          toValue: 1, // volta ao tamanho original
+          duration: 1000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true
+        })
+      ])
+    ).start();
+  };
+
+
+  const rotate = rotateValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg']
+  });
 
 
 
@@ -190,7 +230,9 @@ export default function App() {
       console.log(error);
     });
   }
-
+  useEffect(() => {
+    startAnimation();
+  }, []);
 
 
 
@@ -659,7 +701,10 @@ export default function App() {
             </View>
           </View>
           <View>
-            <Image style={styles.logoIcon} source={logocantinho} />
+            <Animated.Image
+              style={[styles.logoIcon, { transform: [{ rotate }] }]}
+              source={logocantinho}
+            />
           </View>
         </View>
       </ImageBackground>
@@ -890,12 +935,26 @@ export default function App() {
           </View>
           <View style={styles.payments}>
             <Text>Pagamentos</Text>
-            <TouchableOpacity onPress={() => PayTEFCredit(totalValue.toFixed(2).toString())}>
+            <TouchableOpacity onPress={() => SmartPrinterTest(totalValue.toFixed(2).toString())}>
               <View style={styles.buttonPayment}>
                 <Text style={styles.buttonPaymentText}>C .Crédito</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => PayTEF(totalValue.toFixed(2).toString(), "2")} >
+            <TouchableOpacity onPress={() => PayTEF(totalValue.toFixed(2).toString(), "2")
+              .then((status) => {
+                console.warn("Status da transação:", status); // Log para verificar o status
+                if (status === "Aprovada" || status === "Transação Aprovada - Dummy") {
+                  console.warn("Transação aprovada!");
+                } else {
+                  console.warn("Transação falhou: " + status);
+                }
+              })
+              .catch((error) => {
+                console.warn("Erro na transação:", error); // Log de erro
+                alert("Erro na transação: " + error.message);
+              })
+
+            } >
               <View style={styles.buttonPayment}>
                 <Text style={styles.buttonPaymentText}>C .Debito</Text>
               </View>
